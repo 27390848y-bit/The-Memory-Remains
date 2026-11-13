@@ -39,6 +39,16 @@
 .state-stamp{position:absolute;z-index:3;left:50%;top:43%;transform:translate(-50%,-50%) translateY(calc((1 - var(--invasion))*13px));pointer-events:none;opacity:calc(var(--invasion)*.85);font:italic 400 clamp(23px,3.5vw,49px)/1.2 'Playfair Display',serif;color:#e4ecf6;text-shadow:0 2px 25px #010711;text-align:center;letter-spacing:.01em;white-space:nowrap}
 .state-stamp small{display:block;margin-top:8px;font:400 10px 'DM Sans',sans-serif;letter-spacing:.31em;text-transform:uppercase;color:#c8d8ec}
 @media(max-width:600px){.picture-intrusion,.picture-reframing{background-size:auto 100%;background-position:57% center}.state-stamp{font-size:23px;white-space:normal;width:90%}}
+
+/* V3 — object-based memory, same room and same unchanged uniform. */
+.memory-canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;z-index:1;pointer-events:none;display:block}
+#scene>.picture,#scene>.picture-intrusion,#scene>.picture-reframing,#scene>.echo,#scene>.memory-edges,#scene>.memory-ghost,#scene>.memory-film,#scene>.flashwall,#scene>.shadowfigure,#scene>.dawn,#scene>.afterglow,#scene>.bleed,#scene>.veil,#scene>.holdmark,#scene>.state-stamp{display:none!important}
+.experience::after{z-index:2;box-shadow:inset 0 0 65px rgba(0,0,0,.25)}
+.scene-ui{z-index:4}
+.object-subtitle{font-size:10px;line-height:1.6;max-width:350px;margin-top:12px;letter-spacing:.075em;color:rgba(255,239,225,.88);text-shadow:0 2px 15px #000}
+.ticks span{cursor:pointer;transition:color .2s}.ticks span:hover,.ticks span:focus-visible{color:#ffdfbb;outline:0;text-decoration:underline;text-underline-offset:6px}
+#scene:focus-visible{outline:2px solid #dec19f;outline-offset:3px}
+@media(max-width:600px){.experience{height:340px;min-height:340px;aspect-ratio:auto}.memory-canvas{object-fit:contain;object-position:center center}.object-subtitle{max-width:180px;font-size:9px}.ticks{font-size:9px}.hint{max-width:155px}.scene-word{font-size:23px;max-width:225px}}
 </style>
 </head>
 <body>
@@ -49,31 +59,160 @@
 <div class="mast"><div><div class="eyebrow">An interactive study of memory · 2026</div><h1>The Memory<br>Remains</h1><div class="tagline">A memory can remain without occupying the entire room.</div></div><div class="intro-note"><strong>A bedroom. A memory. A change in perspective.</strong><br>The past does not disappear. What changes is how much room it takes up in the present.</div></div>
 <section id="experience" aria-label="Interactive bedroom memory experience">
 <div class="experience" id="scene" tabindex="0" aria-label="Interactive bedroom scene. Move horizontally or use the slider below to explore three emotional states.">
-<div class="picture"></div><div class="picture-intrusion"></div><div class="picture-reframing"></div><div class="memory-edges"></div><div class="memory-ghost"></div><div class="echo"></div><div class="echo two"></div><div class="memory-film"></div><div class="flashwall"></div><div class="shadowfigure"></div><div class="dawn"></div><div class="afterglow"></div><div class="bleed"></div><div class="veil"></div><div class="holdmark"></div>
-<div class="state-stamp" aria-hidden="true">A room within a memory<small>the past is entering</small></div><div class="scene-ui"><div class="scene-top"><div class="scene-number" id="stepIndex">01 / THE PRESENT</div><div class="micro">An archive of one room</div></div><div class="scene-bottom"><div class="safety-note">A fictional artistic interpretation, not a clinical simulation of PTSD.</div><div class="scene-word" id="scenePhrase">The room is quiet.<br>Not empty.</div></div></div>
+<canvas id="memoryCanvas" class="memory-canvas" aria-hidden="true"></canvas><div class="picture"></div><div class="picture-intrusion"></div><div class="picture-reframing"></div><div class="memory-edges"></div><div class="memory-ghost"></div><div class="echo"></div><div class="echo two"></div><div class="memory-film"></div><div class="flashwall"></div><div class="shadowfigure"></div><div class="dawn"></div><div class="afterglow"></div><div class="bleed"></div><div class="veil"></div><div class="holdmark"></div>
+<div class="state-stamp" aria-hidden="true">A room within a memory<small>the past is entering</small></div><div class="scene-ui"><div class="scene-top"><div><div class="scene-number" id="stepIndex">01 / THE PRESENT</div><div class="object-subtitle" id="objectSubtitle">Flowers in bloom. Books undisturbed.</div></div><div class="micro">An archive of one room</div></div><div class="scene-bottom"><div class="safety-note">A fictional artistic interpretation, not a clinical simulation of PTSD.</div><div class="scene-word" id="scenePhrase">The room is quiet.<br>Not empty.</div></div></div>
 </div>
-<div class="interaction"><div class="interaction-heading"><div class="stage-text" id="caption">The present — a familiar room.</div><div class="hint">Move across the room or drag the line to see the three states</div></div><input id="memory" class="track" type="range" min="0" max="100" value="0" step="1" aria-label="Change how the memory occupies the room"><div class="ticks"><span>01 / Present</span><span>02 / Intrusion</span><span>03 / Reframing</span></div></div>
+<div class="interaction"><div class="interaction-heading"><div class="stage-text" id="caption">The present — a familiar room.</div><div class="hint">Move across the room or drag the line · Compare 0 / 50 / 100</div></div><input id="memory" class="track" type="range" min="0" max="100" value="0" step="1" aria-label="Change how the memory occupies the room"><div class="ticks"><span data-stage="0" role="button" tabindex="0" aria-label="Show the present">01 / Present</span><span data-stage="50" role="button" tabindex="0" aria-label="Show the intrusion">02 / Intrusion</span><span data-stage="100" role="button" tabindex="0" aria-label="Show reframing">03 / Reframing</span></div></div>
 </section>
 <div class="below" id="context">
-<section class="col"><div class="eyebrow" style="margin-bottom:14px">Source · The archive</div><h2>The original work</h2><img class="source-image" src="https://epfl-pavilions.ch/media/pages/exhibitions/babylonian-vision/647951dfaf-1709114720/cover-1000x1000.png" alt="Grid of AI-generated speculative Mesopotamian artefacts from Babylonian Vision, Nora Al-Badri, 2020" loading="lazy"><p class="credit"><em>Babylonian Vision</em> (2020) — Nora Al-Badri. Original artwork image © Nora Al-Badri, via EPFL Pavilions.</p><a class="reference-link" href="https://epfl-pavilions.ch/en/exhibitions/babylonian-vision" target="_blank" rel="noopener noreferrer">View the original work ↗</a></section>
-<section class="col" id="response"><div class="eyebrow" style="margin-bottom:14px">Response · 165 words</div><h2>What does memory keep?</h2><p>In <em>Babylonian Vision</em>, Nora Al-Badri uses artificial intelligence to generate artifacts that appear historical, although they never truly existed. Her work questions the authority of museum archives and reveals how systems of classification, ownership, and representation shape what we believe about the past.</p><p>My response shifts this question from collective cultural memory to personal traumatic memory, particularly the experience of veterans living with post-traumatic stress. Instead of imagining the deletion of a painful event, I ask whether its emotional presence can change while the memory itself remains.</p><p>The interactive work presents a quiet bedroom, a space associated with rest and safety. As the viewer moves through the image, subtle disturbances intrude: shadows lengthen, familiar objects echo, and the present becomes uncertain. Gradually, the room regains balance without erasing its traces.</p><p>Inspired by research on memory reconsolidation, the work treats the latent space as a metaphor rather than a medical model: a place where the past cannot be undone, but its relationship to the present may be reimagined.</p></section>
-<section class="col"><div class="eyebrow" style="margin-bottom:14px">Experience · Three states</div><h2>One room, three readings</h2><div class="process-list"><div class="process-card"><b>01</b><span><strong>Present.</strong> An ordinary bedroom, holding an unspoken history.</span></div><div class="process-card"><b>02</b><span><strong>Intrusion.</strong> The past unsettles the scale and shadows of familiar things.</span></div><div class="process-card"><b>03</b><span><strong>Reframing.</strong> The trace remains, but the rest of the room becomes visible again.</span></div></div><div class="difference"><h3>Difference from the original</h3><p>Where <em>Babylonian Vision</em> generates speculative artifacts from institutional archives, this work explores the emotional presence of a personal memory. It does not invent a new past; it asks whether our relationship with an existing past can change.</p></div></section>
+<section class="col"><div class="eyebrow" style="margin-bottom:14px">Source · The archive</div><h2>The original work</h2><img class="source-image" src="https://epfl-pavilions.ch/media/pages/exhibitions/babylonian-vision/647951dfaf-1709114720/cover-2880x1600.png" alt="AI-generated speculative Mesopotamian artifacts from Babylonian Vision, Nora Al-Badri, 2020" loading="lazy"><p class="credit"><em>Babylonian Vision</em> (2020) — Nora Al-Badri. Original artwork image © Nora Al-Badri, via EPFL Pavilions.</p><a class="reference-link" href="https://epfl-pavilions.ch/en/exhibitions/babylonian-vision" target="_blank" rel="noopener noreferrer">View the original work ↗</a></section>
+<section class="col" id="response"><div class="eyebrow" style="margin-bottom:14px">Response · Personal memory</div><h2>What does memory keep?</h2><p>In <em>Babylonian Vision</em>, Nora Al-Badri uses artificial intelligence to generate artifacts that appear historical, although they never truly existed. Her work questions the authority of museum archives and reveals how systems of classification, ownership, and representation shape what we believe about the past.</p><p>My response shifts this question from collective cultural memory to personal traumatic memory, particularly the experience of veterans living with post-traumatic stress. Instead of imagining the deletion of a painful event, I ask whether its emotional presence can change while the memory itself remains.</p><p>The interactive work presents a quiet bedroom, a space associated with rest and safety. As the viewer moves through the image, subtle disturbances intrude: books slip out of place, flowers wilt, shadows lengthen, and the present becomes uncertain. Gradually, the room regains balance without erasing its traces.</p><p>Inspired by research on memory reconsolidation, the work treats the latent space as a metaphor rather than a medical model: a place where the past cannot be undone, but its relationship to the present may be reimagined.</p></section>
+<section class="col"><div class="eyebrow" style="margin-bottom:14px">Experience · Three states</div><h2>One room, three readings</h2><div class="process-list"><div class="process-card"><b>01</b><span><strong>Present.</strong> Books in place, flowers blooming, a room that appears safe.</span></div><div class="process-card"><b>02</b><span><strong>Intrusion.</strong> Books drift, one becomes an envelope, and flowers wilt.</span></div><div class="process-card"><b>03</b><span><strong>Reframing.</strong> Some petals return, others remain dry. A book stays open.</span></div></div><div class="difference"><h3>Difference from the original</h3><p>Where <em>Babylonian Vision</em> generates speculative artifacts from institutional archives, this work explores the emotional presence of a personal memory. It does not invent a new past; it asks whether our relationship with an existing past can change.</p></div></section>
 </div>
 </main><footer class="foot"><span>The Memory Remains / Yehuda Mizrahi</span><span>AI, archive & personal memory / 2026</span></footer>
 </div>
 <script>
 (()=>{
-const root=document.documentElement, scene=document.getElementById('scene'),range=document.getElementById('memory');const caption=document.getElementById('caption'),phrase=document.getElementById('scenePhrase'),index=document.getElementById('stepIndex');let value=0,isDragging=false,lastX=null;
-const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
-function render(v){value=clamp(v,0,100);const intrude=clamp((value-14)/23,0,1)*(1-clamp((value-65)/28,0,1)*.94),calm=clamp((value-64)/32,0,1);const invasion=clamp((value-15)/20,0,1)*(1-clamp((value-66)/31,0,1)),release=clamp((value-67)/29,0,1);root.style.setProperty('--progress',value);root.style.setProperty('--intrude',intrude.toFixed(3));root.style.setProperty('--calm',calm.toFixed(3));root.style.setProperty('--invasion',invasion.toFixed(3));root.style.setProperty('--release',release.toFixed(3));range.value=Math.round(value);if(value<31){index.textContent='01 / THE PRESENT';phrase.innerHTML='The room is quiet.<br>Not empty.';caption.textContent='The present — a familiar room.';}else if(value<69){index.textContent='02 / INTRUSION';phrase.innerHTML='Some memories enter<br>without knocking.';caption.textContent='The past enters the present.';}else{index.textContent='03 / REFRAMING';phrase.innerHTML='Still here.<br>No longer everywhere.';caption.textContent='The memory remains. The room becomes visible again.';}}
-range.addEventListener('input',e=>render(Number(e.target.value)));
-function point(e){const r=scene.getBoundingClientRect();return clamp((e.clientX-r.left)/r.width*100,0,100);}
-scene.addEventListener('pointerdown',e=>{isDragging=true;lastX=e.clientX;scene.setPointerCapture?.(e.pointerId);render(point(e));});
-scene.addEventListener('pointermove',e=>{if(isDragging || e.pointerType==='mouse')render(point(e));});
-scene.addEventListener('pointerup',()=>{isDragging=false;lastX=null});scene.addEventListener('pointercancel',()=>{isDragging=false;lastX=null});
-scene.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowUp'){render(value+4);e.preventDefault()}if(e.key==='ArrowLeft'||e.key==='ArrowDown'){render(value-4);e.preventDefault()}if(e.key==='Home'){render(0);e.preventDefault()}if(e.key==='End'){render(100);e.preventDefault()}});
-scene.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)>2){render(value+Math.sign(e.deltaY)*5);e.preventDefault()}},{passive:false});
-render(0);
+  const root=document.documentElement;
+  const scene=document.getElementById('scene');
+  const canvas=document.getElementById('memoryCanvas');
+  const ctx=canvas.getContext('2d',{alpha:false});
+  const slider=document.getElementById('memory');
+  const caption=document.getElementById('caption');
+  const phrase=document.getElementById('scenePhrase');
+  const index=document.getElementById('stepIndex');
+  const details=document.getElementById('objectSubtitle');
+  const W=1030,H=470;
+  canvas.width=W;canvas.height=H;
+  const src={
+    present:'assets/bedroom.jpg',intrusion:'assets/bedroom-intrusion.jpg',reframing:'assets/bedroom-reframing.jpg',
+    flowerPresent:'assets/flowers-present.png',flowerIntrusion:'assets/flowers-intrusion.png',flowerReframing:'assets/flowers-reframing.png',
+    closed:'assets/object-closed.png',open:'assets/object-open.png',envelope:'assets/object-envelope.png'
+  };
+  const imgs={};let loaded=0;
+  for(const [k,v] of Object.entries(src)){
+    const im=new Image();imgs[k]=im;
+    im.onload=()=>{loaded++;draw();};
+    im.onerror=()=>{console.warn('Missing visual asset:',v);draw();};
+    im.src=v;
+  }
+  let progress=0,drag=false,raf=0;
+  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const smooth=(a,b,v)=>{let t=clamp((v-a)/(b-a));return t*t*(3-2*t)};
+  const image=(im,x,y,w,h,alpha=1)=>{if(!im||!im.complete||!im.naturalWidth||alpha<=.001)return;ctx.save();ctx.globalAlpha=clamp(alpha);ctx.drawImage(im,x,y,w,h);ctx.restore();};
+  function vignette(strength){
+    let g=ctx.createRadialGradient(560,200,95,515,215,650);
+    g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,`rgba(2,4,10,${strength})`);
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }
+  function floating(img,x,y,w,h,angle,opacity){
+    if(!img||!img.complete||!img.naturalWidth||opacity<.002)return;
+    ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+    ctx.shadowColor='rgba(0,0,0,.74)';ctx.shadowBlur=25;ctx.shadowOffsetX=18;ctx.shadowOffsetY=19;
+    ctx.globalAlpha=clamp(opacity);ctx.drawImage(img,-w/2,-h/2,w,h);
+    ctx.restore();
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const v=progress;
+    const invasion=smooth(12,37,v)*(1-smooth(65,94,v));
+    const release=smooth(65,96,v);
+    const now=clamp(1-invasion-release);
+    image(imgs.present,0,0,W,H);
+    image(imgs.intrusion,0,0,W,H,invasion*.97);
+    image(imgs.reframing,0,0,W,H,release);
+    // Memory distortions actually touch the architecture, bedding and window.
+    if(invasion>.002){
+      ctx.save();ctx.beginPath();ctx.rect(0,210,585,214);ctx.clip();
+      const bob=invasion;
+      image(imgs.present,58*bob,208-24*bob,520,212,invasion*.24);
+      ctx.restore();
+      // displaced window (visible doubled frame and curtain, not a flash)
+      ctx.save();ctx.globalAlpha=.24*invasion;ctx.globalCompositeOperation='screen';
+      if(imgs.present.complete&&imgs.present.naturalWidth)ctx.drawImage(imgs.present,445,0,260,250,468-35*invasion,0,260,250);
+      ctx.restore();
+      let sh=ctx.createLinearGradient(0,0,820,450);sh.addColorStop(0,'rgba(9,12,22,0)');sh.addColorStop(.48,'rgba(14,21,39,.32)');sh.addColorStop(1,'rgba(3,8,17,.08)');
+      ctx.globalAlpha=.75*invasion;ctx.fillStyle=sh;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;
+    }
+    // Nightstand wood: old book stack becomes an empty place as the objects leave.
+    if(invasion>.01){
+      ctx.save();ctx.globalAlpha=invasion*.98;
+      let wood=ctx.createLinearGradient(318,224,400,258);
+      wood.addColorStop(0,'#33231d');wood.addColorStop(.5,'#4b3327');wood.addColorStop(1,'#2a211b');
+      ctx.fillStyle=wood;ctx.beginPath();ctx.moveTo(324,225);ctx.lineTo(399,225);ctx.lineTo(401,254);ctx.lineTo(323,254);ctx.closePath();ctx.fill();
+      ctx.restore();
+    }
+    // Original bouquet, wilting, and PARTIAL recovery. The vase remains in place.
+    const flx=250,fly=29,flw=183,flh=212;
+    image(imgs.flowerPresent,flx,fly,flw,flh,now);
+    image(imgs.flowerIntrusion,flx,fly+4*invasion,flw,flh,invasion);
+    image(imgs.flowerReframing,flx,fly,flw,flh,release);
+    // A few petals fallen during the intrusion; some remain after reframing.
+    const fall=[{x:353,y:230,r:-.55},{x:374,y:236,r:.24},{x:310,y:246,r:.85},{x:294,y:230,r:-.24},{x:398,y:254,r:.6}];
+    for(let i=0;i<fall.length;i++){
+      const f=fall[i],a=clamp(invasion*.86+release*(i<2?.5:.13));if(a<=.01)continue;
+      ctx.save();ctx.globalAlpha=a;ctx.translate(f.x,f.y);ctx.rotate(f.r);
+      ctx.fillStyle='#a87c6a';ctx.beginPath();ctx.ellipse(0,0,5,2.1,0,0,2*Math.PI);ctx.fill();ctx.restore();
+    }
+    // 02/INTRUSION: the books separate, one changes into an unmarked envelope.
+    if(invasion>.002){
+      const t=smooth(0,.8,invasion);
+      floating(imgs.closed,354+t*123,236-t*115,95+t*75,66+t*48,-.29*t,invasion*.98);
+      floating(imgs.open,355-t*95,239+t*30,98+t*79,60+t*48,.26*t,invasion*.86);
+      floating(imgs.envelope,350+t*146,225+t*7,70+t*65,46+t*34,-.12*t,invasion*.91);
+      // A shadow of the book follows it, reminding us where it came from.
+      ctx.save();ctx.globalAlpha=invasion*.18;ctx.strokeStyle='#dfd7d2';ctx.lineWidth=1;
+      ctx.setLineDash([4,10]);ctx.beginPath();ctx.moveTo(352,226);ctx.quadraticCurveTo(421,125,481,128);ctx.stroke();ctx.restore();
+    }
+    // 03/REFRAMING: altered arrangement; one book remains open.
+    if(release>.002){
+      floating(imgs.closed,341,226,81,53,-.055,release);
+      floating(imgs.open,368,213,115,75,.12,release);
+      // Quiet golden light falls around the flowers, not over the jacket.
+      ctx.save();ctx.globalAlpha=release*.17;ctx.globalCompositeOperation='screen';
+      const glow=ctx.createRadialGradient(328,156,12,330,160,150);
+      glow.addColorStop(0,'#fce7c9');glow.addColorStop(1,'rgba(250,205,139,0)');
+      ctx.fillStyle=glow;ctx.fillRect(180,25,330,260);ctx.restore();
+    }
+    vignette(.25+invasion*.22);
+  }
+  function ui(){
+    root.style.setProperty('--progress',progress);
+    slider.value=Math.round(progress);
+    if(progress<30){
+      index.textContent='01 / THE PRESENT';
+      phrase.innerHTML='The room is quiet.<br>Not empty.';
+      caption.textContent='Present — the objects are where they belong.';
+      details.textContent='Flowers in bloom. Books undisturbed.';
+    }else if(progress<70){
+      index.textContent='02 / INTRUSION';
+      phrase.innerHTML='The past moves<br>what was familiar.';
+      caption.textContent='Intrusion — books drift; the flowers lose their colour.';
+      details.textContent='A book turns into an envelope. The flowers wilt.';
+    }else{
+      index.textContent='03 / REFRAMING';
+      phrase.innerHTML='Still here.<br>No longer everywhere.';
+      caption.textContent='Reframing — some petals return, others do not.';
+      details.textContent='An open book remains. The uniform has not moved.';
+    }
+  }
+  function set(v){progress=clamp(v,0,100);ui();draw()}
+  window.__setMemoryStage=set; // Allows automated visual regression checks.
+  slider.addEventListener('input',e=>set(+e.target.value));
+  function point(e){const r=scene.getBoundingClientRect();return clamp((e.clientX-r.left)/r.width,0,1)*100}
+  scene.addEventListener('pointerdown',e=>{drag=true;scene.setPointerCapture?.(e.pointerId);set(point(e))});
+  scene.addEventListener('pointermove',e=>{if(drag||e.pointerType==='mouse')set(point(e))});
+  scene.addEventListener('pointerup',()=>{drag=false});scene.addEventListener('pointercancel',()=>{drag=false});
+  scene.addEventListener('keydown',e=>{if(['ArrowRight','ArrowUp','ArrowLeft','ArrowDown','Home','End'].includes(e.key)){
+    set(e.key==='Home'?0:e.key==='End'?100:progress+(e.key==='ArrowRight'||e.key==='ArrowUp'?5:-5));e.preventDefault();
+  }});
+  scene.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)>2){set(progress+Math.sign(e.deltaY)*5);e.preventDefault()}},{passive:false});
+  document.querySelectorAll('[data-stage]').forEach(el=>{
+    const act=()=>set(+el.dataset.stage);
+    el.addEventListener('click',act);
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){act();e.preventDefault()}});
+  });
+  ui();draw();
 })();
 </script>
 </body></html>
