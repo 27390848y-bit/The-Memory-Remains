@@ -28,6 +28,8 @@ h1{font:400 clamp(59px,8vw,118px)/.98 'Playfair Display',Georgia,serif;letter-sp
 .scene{position:relative;isolation:isolate;overflow:hidden;aspect-ratio:1848/851;border:1px solid rgba(240,228,210,.20);background:#101620;min-height:400px;cursor:ew-resize;touch-action:pan-y;user-select:none}
 .frame{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;transition:opacity .12s linear;will-change:opacity}
 .frame.present{opacity:1}.frame.intrusion{opacity:var(--intrusion)}.frame.reframing{opacity:var(--reframing)}
+/* Atmospheric shift is separate from identical photographed geometry */
+.scene:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;opacity:var(--intrusion);background:linear-gradient(125deg,rgba(7,20,38,.15),rgba(8,15,35,.20));mix-blend-mode:multiply}
 .scene::after{content:'';pointer-events:none;position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,rgba(5,7,10,.45),transparent 32%,transparent 74%,rgba(5,8,11,.18)),linear-gradient(0deg,rgba(4,6,11,.62),transparent 27%,transparent 68%,rgba(4,6,11,.16))}
 .grain{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.13;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E")}
 .scene-overlay{position:absolute;z-index:3;inset:0;pointer-events:none;padding:clamp(18px,2.5vw,40px);display:flex;flex-direction:column;justify-content:space-between}
@@ -72,8 +74,8 @@ h1{font:400 clamp(59px,8vw,118px)/.98 'Playfair Display',Georgia,serif;letter-sp
 <section id="experience" aria-label="Interactive bedroom memory experience">
 <div class="scene" id="scene" tabindex="0" role="region" aria-label="Explore memory by moving horizontally or using the slider below">
 <img class="frame present" src="assets/bedroom-present.jpg" alt="Quiet bedroom, flowers in bloom and books arranged beside a lamp" draggable="false">
-<img class="frame intrusion" src="assets/bedroom-intrusion.jpg" alt="Same bedroom in darker light, with wilted flowers and an open displaced book" draggable="false">
-<img class="frame reframing" src="assets/bedroom-reframing.jpg" alt="Bedroom calmed again, with some blooms and some withered flowers remaining" draggable="false">
+<img class="frame intrusion" src="assets/bedroom-intrusion.jpg" alt="The very same bedroom and fixed furniture, with local changes to the flowers and books" draggable="false">
+<img class="frame reframing" src="assets/bedroom-reframing.jpg" alt="Exactly the same room; some flowers remain aged and the book stays partly open" draggable="false">
 <div class="grain"></div>
 <div class="scene-overlay"><div class="topline"><div><div class="number" id="stepIndex">01 / PRESENT</div><div class="objects" id="objectSubtitle">The flowers are alive. The books are in place.</div></div><div class="micro">An archive of one room</div></div><div class="bottomline"><div class="caution">A fictional artistic interpretation, not a clinical simulation of PTSD.</div><div class="phrase" id="scenePhrase">The room is quiet.<br>Not empty.</div></div></div>
 </div>
@@ -99,8 +101,8 @@ h1{font:400 clamp(59px,8vw,118px)/.98 'Playfair Display',Georgia,serif;letter-sp
  const smooth=(a,b,v)=>{let t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};
  function set(v){
    value=clamp(v,0,100);
-   const interruption=smooth(12,39,value)*(1-smooth(59,84,value));
-   const recovery=smooth(67,97,value);
+   const interruption=smooth(9,41,value)*(1-smooth(59,85,value));
+   const recovery=smooth(68,96,value);
    document.documentElement.style.setProperty('--v',value);
    document.documentElement.style.setProperty('--intrusion',interruption.toFixed(3));
    document.documentElement.style.setProperty('--reframing',recovery.toFixed(3));
